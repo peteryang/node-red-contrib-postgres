@@ -45,10 +45,10 @@
         defaults: {
             hostname: { value:"localhost",required:true},
             port: { value: 5432,required:true},
-            db: { value:"postgres",required:true}
+            db: { value:"postgres",required:true},
+            ssl: { value:false }
         },
         credentials: {
-            ssl: { value:false },
             user: {type: "text"},
             password: {type: "password"}
         },
