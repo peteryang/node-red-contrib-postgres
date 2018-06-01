@@ -94,7 +94,6 @@ function PostgresNode(n) {
   node.postgresdb = n.postgresdb;
   node.postgresConfig = RED.nodes.getNode(this.postgresdb);
   node.sqlquery = n.sqlquery;
-  node.output = n.output;
 
   if (node.postgresConfig) {
 
@@ -108,10 +107,14 @@ function PostgresNode(n) {
     };
 
     var handleError = function(err, msg) {
-      node.error(err);
-      console.log(err);
-      console.log(msg.payload);
-      console.log(msg.queryParameters);
+      msg.payload = "";
+      msg.status = "error";
+      node.send(msg);
+      node.status({
+        fill: "red",
+        shape: "ring",
+        text: "error: " + err.message
+      });
     };
 
     node.on('input', function(msg) {
@@ -132,10 +135,14 @@ function PostgresNode(n) {
               if (err) {
                 handleError(err, msg);
               } else {
-                if (node.output) {
-                  msg.payload = results.rows;
-                  node.send(msg);
-                }
+                msg.payload = results.rows;
+                msg.status = "success";
+                node.status({
+                  fill: "blue",
+                  shape: "dot",
+                  text: "success"
+                });
+                node.send(msg);
               }
             }
           );
