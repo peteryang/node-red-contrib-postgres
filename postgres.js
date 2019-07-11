@@ -14,7 +14,6 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME + "/red/red");
 var pg = require('pg');
 var named = require('node-postgres-named');
 var querystring = require('querystring');
@@ -124,8 +123,9 @@ function PostgresNode(n) {
         } else {
           named.patch(client);
 
-          if (!!!msg.queryParameters)
+          if (!!!msg.queryParameters){
             msg.queryParameters = {};
+          }
 
           client.query(
             msg.payload,
@@ -154,7 +154,9 @@ function PostgresNode(n) {
   }
 
   this.on("close", function() {
-    if (node.clientdb) node.clientdb.end();
+    if (node.clientdb) {
+      node.clientdb.end();
+    }
   });
 }
 
