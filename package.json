@@ -16,9 +16,9 @@
     "postgresql"
   ],
   "dependencies": {
-    "pg": "~7.4.1",
-    "node-postgres-named": "^2.4.1",
-    "querystring": "^0.2.0"
+    "pg": "7.11.0",
+    "node-postgres-named": "2.4.1",
+    "querystring": "0.2.0"
   },
   "devDependencies": {
     "grunt": "^1.0.4",
