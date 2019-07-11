@@ -1,29 +1,38 @@
 {
-    "name": "node-red-contrib-postgres",
-    "version": "0.6.2",
-    "description": "A Node-RED node to query PostgreSql",
-    "dependencies": {
-        "pg": "^6.1.5",
-        "node-postgres-named": "^2.4.1",
-        "querystring": "^0.2.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/krisdaniels/node-red-contrib/tree/master/node-red-contrib-postgres"
-    },
-    "license": "Apache",
-    "keywords": [
-        "node-red",
-        "postgres",
-        "postgresql"
-    ],
-    "node-red": {
-        "nodes": {
-            "PostgreSql": "postgres.js"
-        }
-    },
-    "author": {
-        "name": "Kris Daniels",
-        "email": "krisdaniels@gmail.com"
+  "name": "node-red-contrib-postgres",
+  "version": "0.7.0",
+  "description": "A Node-RED node to query PostgreSql",
+  "author": "Hiroyuki Okada <okada@unirobot.com>",
+  "scripts": {
+    "test": "grunt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krisdaniels/node-red-contrib/tree/master/node-red-contrib-postgres"
+  },
+  "keywords": [
+    "node-red",
+    "postgres",
+    "postgresql"
+  ],
+  "dependencies": {
+    "pg": "7.11.0",
+    "node-postgres-named": "2.4.1",
+    "querystring": "0.2.0"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.4",
+    "grunt-contrib-jshint": "^2.1.0",
+    "grunt-jsonlint": "^2.0.0",
+    "grunt-lint-inline": "^1.0.0"
+  },
+  "license": "Apache-2.0",
+  "node-red": {
+    "nodes": {
+      "PostgreSql": "postgres.js"
     }
+  },
+  "engines": {
+    "node": ">=8"
+  }
 }
