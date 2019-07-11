@@ -125,7 +125,7 @@ module.exports = function(RED) {
           } else {
             named.patch(client);
 
-            if (!!!msg.queryParameters){
+            if (msg.queryParameters === undefined){
               msg.queryParameters = {};
             }
 
