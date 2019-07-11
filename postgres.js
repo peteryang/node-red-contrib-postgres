@@ -14,150 +14,153 @@
  * limitations under the License.
  **/
 
-var pg = require('pg');
+var Pool = require('pg').Pool;
 var named = require('node-postgres-named');
 var querystring = require('querystring');
 
-RED.httpAdmin.get('/postgresdb/:id', function(req, res) {
-  var credentials = RED.nodes.getCredentials(req.params.id);
-  if (credentials) {
-    res.send(JSON.stringify({
-      user: credentials.user,
-      hasPassword: (credentials.password && credentials.password != "")
-    }));
-  } else {
-    res.send(JSON.stringify({}));
-  }
-});
-
-RED.httpAdmin.delete('/postgresdb/:id', function(req, res) {
-  RED.nodes.deleteCredentials(req.params.id);
-  res.send(200);
-});
-
-RED.httpAdmin.post('/postgresdb/:id', function(req, res) {
-  var body = "";
-  req.on('data', function(chunk) {
-    body += chunk;
+module.exports = function(RED) {
+  RED.httpAdmin.get('/postgresdb/:id', function(req, res) {
+    var credentials = RED.nodes.getCredentials(req.params.id);
+    if (credentials) {
+      res.send(JSON.stringify({
+        user: credentials.user,
+        hasPassword: (credentials.password && credentials.password !== "")
+      }));
+    } else {
+      res.send(JSON.stringify({}));
+    }
   });
-  req.on('end', function() {
-    var newCreds = querystring.parse(body);
-    var credentials = RED.nodes.getCredentials(req.params.id) || {};
-    if (newCreds.user == null || newCreds.user == "") {
-      delete credentials.user;
-    } else {
-      credentials.user = newCreds.user;
-    }
-    if (newCreds.password == "") {
-      delete credentials.password;
-    } else {
-      credentials.password = newCreds.password || credentials.password;
-    }
-    RED.nodes.addCredentials(req.params.id, credentials);
+
+  RED.httpAdmin.delete('/postgresdb/:id', function(req, res) {
+    RED.nodes.deleteCredentials(req.params.id);
     res.send(200);
   });
-});
 
+  RED.httpAdmin.post('/postgresdb/:id', function(req, res) {
+    var body = "";
+    req.on('data', function(chunk) {
+      body += chunk;
+    });
+    req.on('end', function() {
+      var newCreds = querystring.parse(body);
+      var credentials = RED.nodes.getCredentials(req.params.id) || {};
+      if (newCreds.user == null || newCreds.user === "") {
+        delete credentials.user;
+      } else {
+        credentials.user = newCreds.user;
+      }
+      if (newCreds.password === "") {
+        delete credentials.password;
+      } else {
+        credentials.password = newCreds.password || credentials.password;
+      }
+      RED.nodes.addCredentials(req.params.id, credentials);
+      res.send(200);
+    });
+  });
 
-function PostgresDatabaseNode(n) {
-  RED.nodes.createNode(this, n);
-  this.hostname = n.hostname;
-  this.port = n.port;
-  this.db = n.db;
-  this.ssl = n.ssl;
+  function PostgresDatabaseNode(n) {
+    RED.nodes.createNode(this, n);
+    this.hostname = n.hostname;
+    this.port = n.port;
+    this.db = n.db;
+    this.ssl = n.ssl;
 
-  var credentials = this.credentials;
-  if (credentials) {
-    this.user = credentials.user;
-    this.password = credentials.password;
-  }
-}
-
-RED.nodes.registerType("postgresdb", PostgresDatabaseNode, {
-  credentials: {
-    user: {
-      type: "text"
-    },
-    password: {
-      type: "password"
+    var credentials = this.credentials;
+    if (credentials) {
+      this.user = credentials.user;
+      this.password = credentials.password;
     }
   }
-});
 
-function PostgresNode(n) {
-  RED.nodes.createNode(this, n);
-
-  var node = this;
-
-  node.topic = n.topic;
-  node.postgresdb = n.postgresdb;
-  node.postgresConfig = RED.nodes.getNode(this.postgresdb);
-  node.sqlquery = n.sqlquery;
-
-  if (node.postgresConfig) {
-
-    var connectionConfig = {
-      user: node.postgresConfig.user,
-      password: node.postgresConfig.password,
-      host: node.postgresConfig.hostname,
-      port: node.postgresConfig.port,
-      database: node.postgresConfig.db,
-      ssl: node.postgresConfig.ssl
-    };
-
-    var handleError = function(err, msg) {
-      msg.payload = "";
-      msg.status = "error";
-      node.send(msg);
-      node.status({
-        fill: "red",
-        shape: "ring",
-        text: "error: " + err.message
-      });
-    };
-
-    node.on('input', function(msg) {
-      pg.connect(connectionConfig, function(err, client, done) {
-        if (err) {
-          handleError(err, msg);
-        } else {
-          named.patch(client);
-
-          if (!!!msg.queryParameters){
-            msg.queryParameters = {};
-          }
-
-          client.query(
-            msg.payload,
-            msg.queryParameters,
-            function(err, results) {
-              done();
-              if (err) {
-                handleError(err, msg);
-              } else {
-                msg.payload = results.rows;
-                msg.status = "success";
-                node.status({
-                  fill: "blue",
-                  shape: "dot",
-                  text: "success"
-                });
-                node.send(msg);
-              }
-            }
-          );
-        }
-      });
-    });
-  } else {
-    this.error("missing postgres configuration");
-  }
-
-  this.on("close", function() {
-    if (node.clientdb) {
-      node.clientdb.end();
+  RED.nodes.registerType("postgresdb", PostgresDatabaseNode, {
+    credentials: {
+      user: {
+        type: "text"
+      },
+      password: {
+        type: "password"
+      }
     }
   });
-}
 
-RED.nodes.registerType("postgres", PostgresNode);
+  function PostgresNode(n) {
+    RED.nodes.createNode(this, n);
+
+    var node = this;
+
+    node.topic = n.topic;
+    node.postgresdb = n.postgresdb;
+    node.postgresConfig = RED.nodes.getNode(this.postgresdb);
+    node.sqlquery = n.sqlquery;
+
+    if (node.postgresConfig) {
+
+      var connectionConfig = {
+        user: node.postgresConfig.user,
+        password: node.postgresConfig.password,
+        host: node.postgresConfig.hostname,
+        port: node.postgresConfig.port,
+        database: node.postgresConfig.db,
+        ssl: node.postgresConfig.ssl
+      };
+
+      var handleError = function(err, msg) {
+        msg.payload = "";
+        msg.status = "error";
+        node.send(msg);
+        node.status({
+          fill: "red",
+          shape: "ring",
+          text: "error: " + err.message
+        });
+      };
+
+      var pool = new Pool(connectionConfig);
+
+      node.on('input', function(msg) {
+        pool.connect(function(err, client, done) {
+          if (err) {
+            handleError(err, msg);
+          } else {
+            named.patch(client);
+
+            if (!!!msg.queryParameters){
+              msg.queryParameters = {};
+            }
+
+            client.query(
+              msg.payload,
+              msg.queryParameters,
+              function(err, results) {
+                done();
+                if (err) {
+                  handleError(err, msg);
+                } else {
+                    msg.payload = results.rows;
+                    msg.status = "success";
+                    node.status({
+                      fill: "blue",
+                      shape: "dot",
+                      text: "success"
+                    });
+                    node.send(msg);
+                }
+              }
+            );
+          }
+        });
+      });
+    } else {
+      this.error("missing postgres configuration");
+    }
+
+    this.on("close", function() {
+      if (node.clientdb) {
+        node.clientdb.end();
+      }
+    });
+  }
+
+  RED.nodes.registerType("postgres", PostgresNode);
+};
