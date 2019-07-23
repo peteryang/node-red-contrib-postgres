@@ -33,7 +33,7 @@ module.exports = function(RED) {
 
   RED.httpAdmin.delete('/postgresdb/:id', function(req, res) {
     RED.nodes.deleteCredentials(req.params.id);
-    res.send(200);
+    res.status(200).send({});
   });
 
   RED.httpAdmin.post('/postgresdb/:id', function(req, res) {
@@ -55,7 +55,7 @@ module.exports = function(RED) {
         credentials.password = newCreds.password || credentials.password;
       }
       RED.nodes.addCredentials(req.params.id, credentials);
-      res.send(200);
+      res.status(200).send({});
     });
   });
 
