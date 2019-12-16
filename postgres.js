@@ -119,6 +119,10 @@ module.exports = function(RED) {
       var pool = new Pool(connectionConfig);
 
       node.on('input', function(msg) {
+        if(msg.payload === undefined){
+          node.error(RED._("postgres.errors.payload"));
+          return;
+        }
         pool.connect(function(err, client, done) {
           if (err) {
             handleError(err, msg);

@@ -49,6 +49,28 @@ describe("Postgres Node", () => {
         });
     });
 
+    it("msg.payload is empty", (done) => {
+        let flow = [
+            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
+            { id: "n2", type: "helper" }
+        ];
+        let credntial = {
+            db: {
+                user: settings.user,
+                password: settings.password
+            }
+        };
+        helper.load(node, flow, credntial, () => {
+            const n1 = helper.getNode("n1");
+            n1.on("call:error", (msg) => {
+                msg.args[0].should.equal("postgres.errors.payload");
+                done();
+            });
+            n1.receive({});
+        });
+    });
+
     it("get credntial return success", (done) => {
         let flow = [
             { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
