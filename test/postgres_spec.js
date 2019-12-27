@@ -2,7 +2,12 @@ const should = require("should");
 const helper = require("node-red-node-test-helper");
 
 const node = require("../postgres");
-const settings = require("../.settings.json");
+
+const ps_hostname = process.env.PS_HOSTNAME;
+const ps_port = process.env.PS_PORT;
+const ps_db = process.env.PS_DB;
+const ps_user = process.env.PS_DB;
+const ps_password = process.env.PS_PASSWORD;
 
 describe("Postgres Node", () => {
     before((done) => {
@@ -28,14 +33,14 @@ describe("Postgres Node", () => {
 
     it("select table is success", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -51,14 +56,14 @@ describe("Postgres Node", () => {
 
     it("msg.payload is empty", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -73,20 +78,20 @@ describe("Postgres Node", () => {
 
     it("get credntial return success", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
             helper.request().get("/postgresdb/db").end((err, res) => {
                 const result = JSON.parse(res.text);
-                result.should.have.property("user", settings.user);
+                result.should.have.property("user", ps_user);
                 result.should.have.property("hasPassword", true);
                 done();
             });
@@ -95,7 +100,7 @@ describe("Postgres Node", () => {
 
     it("get credntial return empty", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
@@ -111,14 +116,14 @@ describe("Postgres Node", () => {
 
     it("post credntial ok", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -135,14 +140,14 @@ describe("Postgres Node", () => {
 
     it("post credntial (user is null)", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -158,14 +163,14 @@ describe("Postgres Node", () => {
 
     it("post credntial (password is empty)", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -182,14 +187,14 @@ describe("Postgres Node", () => {
 
     it("delete credntial", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -199,14 +204,14 @@ describe("Postgres Node", () => {
 
     it("sql error", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -222,14 +227,14 @@ describe("Postgres Node", () => {
 
     it("hostname is empty", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname:"", port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname:"", port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -245,14 +250,14 @@ describe("Postgres Node", () => {
 
     it("port is error", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname: settings.hostname, port: 80, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname: ps_hostname, port: 80, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -268,14 +273,14 @@ describe("Postgres Node", () => {
 
     it("db is empty", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname: settings.hostname, port: settings.port, db: "", ssl:false},
+            { id: "db", type: "postgresdb", hostname: ps_hostname, port: ps_port, db: "", ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];
         let credntial = {
             db: {
-                user: settings.user,
-                password: settings.password
+                user: ps_user,
+                password: ps_password
             }
         };
         helper.load(node, flow, credntial, () => {
@@ -291,7 +296,7 @@ describe("Postgres Node", () => {
 
     it("credntial is empty", (done) => {
         let flow = [
-            { id: "db", type: "postgresdb", hostname: settings.hostname, port: settings.port, db: settings.db, ssl:false},
+            { id: "db", type: "postgresdb", hostname: ps_hostname, port: ps_port, db: ps_db, ssl:false},
             { id: "n1", type: "postgres", postgresdb: "db", name:"","wires":[["n2"]]},
             { id: "n2", type: "helper" }
         ];

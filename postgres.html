@@ -69,14 +69,6 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="postgres">
-    <p>A PostgreSql I/O node. </p>
-    <p>Executes the query specified in msg.payload with optional query parameters in msg.queryParameters</p>
-    <p>The queryParameters in the query must be specified as $propertyname</p>
-    <p>See the node-postgres-named package for more info</p>
-    <p>When receiving data from the query, the msg.payload on the output will be a json array of the returned records</p>
-</script>
-
 <script type="text/javascript">
 		RED.nodes.registerType('postgres',{
 			category: 'storage-output',
